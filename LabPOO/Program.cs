@@ -30,6 +30,7 @@ namespace LabPOO
             SupplyStore();
             AddProductRecepie();
 
+            RecoverData();
             
 
             /*
@@ -71,7 +72,11 @@ namespace LabPOO
                     else if (answer == "4")
                     {
 
-
+                        bool todoOK = OnPay();
+                        if (todoOK)
+                        {
+                            Console.WriteLine("No estan todos los productos en el carro!");
+                        }
                         Pay();
                         break;
                     }
@@ -242,6 +247,12 @@ namespace LabPOO
 
         public static void SaveData()
         {
+            /*OJO SI NO SERIALIZO UNA VEZ QUE NO EXISTAN PRODUCTOS EN EL CARRO AL VOLVER A ABRIR EL PROGRAMA CARGARA EL CARRO ANTES DE
+            HABER PAGADO. ES POR ESO QUE TAMBIEN SERIALIZO PARA CUANDO NO EXISTAN PRODUCTOS EN EL CARRO PARA PODER CARGAR UN CARRO VACIO
+            UNA VEZ QUE PAGUE Y LUEGO CIERRE EL PRORGAMA*/
+
+            //if (cart.Count() == 0) { return; }
+
             using (Stream stream = File.Open("data.bin", FileMode.Create))
             {
                 BinaryFormatter bin = new BinaryFormatter();
@@ -252,19 +263,41 @@ namespace LabPOO
 
         public static void RecoverData()
         {
-            using (Stream stream = File.Open("data.bin", FileMode.Open))
+            try
             {
-                BinaryFormatter bin = new BinaryFormatter();
-                cart.Clear();
-                cart = (List<Product>)bin.Deserialize(stream);
+                using (Stream stream = File.Open("data.bin", FileMode.Open))
+                {
+                    BinaryFormatter bin = new BinaryFormatter();
+                    cart.Clear();
+                    cart = (List<Product>)bin.Deserialize(stream);
+                }
+            }
+            catch
+            {
+                Console.WriteLine("No existen datos anteriores");
             }
 
             return;
         }
 
 
-    }
+        public static bool OnPay()
+        {
+            bool allProductsInCart = true;
+            foreach(Product producto in ProductsRecepie)
+            {
+                if (!cart.Contains(producto)) { allProductsInCart = false; }
+            }
 
+            return allProductsInCart;
+
+        }
+
+
+
+
+    }
+    [Serializable()]
     public class Gestor
     {
         public void OnAddedProduct(object sender, ProductEventArgs e)
@@ -292,6 +325,9 @@ namespace LabPOO
             Console.ReadKey();
         }
     }
+
+
+
 
     
 }
