@@ -65,8 +65,6 @@ namespace LabPOO
                     else if (answer == "4")
                     {
 
-                        gestor +=
-
 
                         Pay();
                         break;
