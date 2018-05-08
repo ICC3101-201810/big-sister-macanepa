@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
+
 
 namespace LabPOO
 {
@@ -13,6 +16,7 @@ namespace LabPOO
     {
         public static List<Product> cart;
         public static List<Product> market;
+
         public static List<Product> ProductsRecepie = new List<Product>();
 
 
@@ -25,6 +29,8 @@ namespace LabPOO
             market = new List<Product>();
             SupplyStore();
             AddProductRecepie();
+
+            
 
             /*
             foreach(Product product in ProductsRecepie)
@@ -71,6 +77,7 @@ namespace LabPOO
                     }
                     else if (answer == "5")
                     {
+                        SaveData();
                         Environment.Exit(1);
                     }
                 }
@@ -233,6 +240,28 @@ namespace LabPOO
             ProductsRecepie.Add(new Product("Bolsa de Zanahorias", 890, 74, "1un"));//       1
         }
 
+        public static void SaveData()
+        {
+            using (Stream stream = File.Open("data.bin", FileMode.Create))
+            {
+                BinaryFormatter bin = new BinaryFormatter();
+                bin.Serialize(stream, Program.cart);
+            }
+            return;
+        }
+
+        public static void RecoverData()
+        {
+            using (Stream stream = File.Open("data.bin", FileMode.Open))
+            {
+                BinaryFormatter bin = new BinaryFormatter();
+                cart.Clear();
+                cart = (List<Product>)bin.Deserialize(stream);
+            }
+
+            return;
+        }
+
 
     }
 
@@ -263,4 +292,6 @@ namespace LabPOO
             Console.ReadKey();
         }
     }
+
+    
 }

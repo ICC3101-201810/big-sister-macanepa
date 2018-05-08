@@ -10,7 +10,7 @@ namespace LabPOO
     {
         public Product product { get; set; }
     }
-
+    [Serializable()]
     public class Product
     {
         private string name;
